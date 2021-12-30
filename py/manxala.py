@@ -115,25 +115,47 @@ class board():
         # if player==1, then rotate with 6.        
 
         pearls = self.holes[hole].flush()
-        hole_position = hole
+        hole_position = hole + 6*player 
         at_base = False
-        
-        for m in range(pearls):
+
+        m = 0
+        while m < pearls:
+            m = m + 1
             hole_position = hole_position + 1 
             at_base = False
-            
-            if (hole_position+player*6 == 12): # This will fail as it will pass through twice
-                self.homes[player].add()
-                at_base = True
-                continue
-            
-            if (hole_position >= 12):
-                hole_position = hole_position-12
 
-            self.holes[hole_position].add()
-            
-        return hole_position,at_base
-        
+            if (player==0) and (hole_position == 12):
+                # First hit on the place.
+                at_base = True
+                self.homes[player].add() # Add one gem to the home.
+                if (m < pearls):
+                    # There are pearls lefts                    
+                    hole_position = -1                    
+                else:
+                    # No pearls left and thus leave the while loop
+                    break 
+
+            elif (player==1) and (hole_position == 12):
+                # First hit on the place.
+                at_base = True
+                self.homes[player].add() # Add one gem to the home.
+                if (m < pearls):
+                    # There are pearls lefts                    
+                    hole_position = -1                    
+                else:
+                    # No pearls left and thus leave the while loop
+                    break 
+
+            else:
+                if hole_position > 12:
+                    hole_position = hole_position - 12
+                    
+                self.holes[hole_position-6*player].add()
+                
+        #print(f" ----> {hole_position} <---- ")
+        #print(f" ----> {hole_position-6*player} <---- ")
+        return hole_position-6*player,at_base
+    
     def iter(self, player=0, hole=0, rounds=10):
         # ===
         gogo = True
@@ -141,7 +163,7 @@ class board():
         base = False
         cleaned = False
         # rounds is for testing purposes only, to avoid deadlock in loop
-        print(hole)
+        # print(hole)
         if hole is None:
             pearls_in_holes = self.hoho(player=player)
             print(f"From home, starting condition { pearls_in_holes }")
@@ -161,7 +183,7 @@ class board():
             
             ctr = ctr + 1
             self.show()
-            print(f"{ctr}: {hole} // {self.sum()}")
+            #print(f"{ctr}: {hole} // {self.sum()}")
             
             if base: # Ended at home base, break the loop and reiterate
                 gogo = False
@@ -238,7 +260,6 @@ def main(args=None):
         if base:
             active_player = active_player
         else:
-            print("Changing player!")
             active_player = 1-active_player
 
 
